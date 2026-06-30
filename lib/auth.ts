@@ -3,6 +3,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { emailOTP, organization } from "better-auth/plugins";
 import { createElement } from "react";
 import OtpEmail from "@/mails/templates/otp-email";
+import InvitationEmail from "@/mails/templates/invitation-email";
 import { prisma } from "./prisma";
 import { resend } from "./resend";
 
@@ -10,6 +11,7 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+  baseURL: process.env.BETTER_AUTH_URL!,
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID as string,
@@ -27,7 +29,22 @@ export const auth = betterAuth({
         });
       },
     }),
-    organization(),
+    organization({
+      sendInvitationEmail: async (data) => {
+        const acceptLink = `${process.env.BETTER_AUTH_URL}/onboarding/member`;
+        await resend.emails.send({
+          from: "Moto Status <noreply@send.motostatus.com.br>",
+          to: [data.email],
+          subject: `Convite para ${data.organization.name}`,
+          react: createElement(InvitationEmail, {
+            inviterName: data.inviter.user.name,
+            organizationName: data.organization.name,
+            role: data.role,
+            acceptLink,
+          }),
+        });
+      },
+    }),
   ],
   user: {
     additionalFields: {
