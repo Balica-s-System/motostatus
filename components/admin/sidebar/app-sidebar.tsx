@@ -42,7 +42,7 @@ export const navData: NavItem[] = [
   { title: "Time", icon: Users2Icon, href: "/admin/settings/time" },
 
   { label: "Configurações de Usuário", isSection: true },
-  { title: "Geral", icon: Settings2, href: "/admin/user-settings" },
+  { title: "Geral", icon: Settings2, href: "/admin/user-settings/general" },
   {
     title: "Notificações",
     icon: Bell,

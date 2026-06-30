@@ -2,6 +2,7 @@
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation"; // 1. Importa o hook de rotas do Next.js
 import * as React from "react";
 import {
   Collapsible,
@@ -30,44 +31,35 @@ export type NavItem = {
 };
 
 export function NavMain({ items }: { items: NavItem[] }) {
-  const [activeParent, setActiveParent] = React.useState<string | null>(
-    items.find((i) => !i.isSection)?.title || null,
-  );
-  const [activeChild, setActiveChild] = React.useState<string | null>(null);
-
+  // Limpeza dos estados manuais redundantes
   return (
     <>
       {items.map((item, index) => (
-        <NavMainItem
-          key={item.title || item.label || index}
-          item={item}
-          activeParent={activeParent}
-          setActiveParent={setActiveParent}
-          activeChild={activeChild}
-          setActiveChild={setActiveChild}
-        />
+        <NavMainItem key={item.title || item.label || index} item={item} />
       ))}
     </>
   );
 }
 
-function NavMainItem({
-  item,
-  activeParent,
-  setActiveParent,
-  activeChild,
-  setActiveChild,
-}: {
-  item: NavItem;
-  activeParent: string | null;
-  activeChild: string | null;
-  setActiveParent: (val: string) => void;
-  setActiveChild: (val: string | null) => void;
-}) {
+function NavMainItem({ item }: { item: NavItem }) {
+  const pathname = usePathname(); // 2. Captura a URL atual na barra de endereço
   const hasChildren = !!item.children?.length;
-  const isParentActive = activeParent === item.title;
+
+  // Função para checar se o link exato ou uma sub-rota está ativa
+  const isUrlActive = (href?: string) => {
+    if (!href) return false;
+    // Retorna verdadeiro se a rota atual for idêntica ou se estender o caminho do link
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
+  // Se o item tem filhos, ele fica ativo se algum dos sub-itens estiver ativo
+  const isParentActive = hasChildren
+    ? item.children?.some((child) => isUrlActive(child.href))
+    : isUrlActive(item.href);
+
   const [isOpen, setIsOpen] = React.useState(isParentActive);
 
+  // Garante que o menu retrátil permaneça aberto se a rota ativa pertencer a um de seus filhos
   React.useEffect(() => {
     if (isParentActive) {
       setIsOpen(true);
@@ -84,6 +76,7 @@ function NavMainItem({
     );
   }
 
+  // Item com filhos colapsáveis
   if (hasChildren && item.title) {
     return (
       <SidebarGroup className="p-0">
@@ -95,7 +88,6 @@ function NavMainItem({
                   id={`nav-main-trigger-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
                   tooltip={item.title}
                   isActive={isParentActive}
-                  onClick={() => setActiveParent(item.title!)}
                   className={cn(
                     "rounded-md text-sm font-medium px-3 py-2 h-9 transition-colors cursor-pointer w-full",
                     isParentActive
@@ -116,15 +108,7 @@ function NavMainItem({
               <CollapsibleContent>
                 <SidebarMenuSub className="me-0 pe-0">
                   {item.children!.map((child, index) => (
-                    <NavMainSubItem
-                      key={child.title || index}
-                      item={child}
-                      activeParent={activeParent}
-                      setActiveParent={setActiveParent}
-                      activeChild={activeChild}
-                      setActiveChild={setActiveChild}
-                      parentTitle={item.title}
-                    />
+                    <NavMainSubItem key={child.title || index} item={child} />
                   ))}
                 </SidebarMenuSub>
               </CollapsibleContent>
@@ -135,20 +119,16 @@ function NavMainItem({
     );
   }
 
+  // Item terminal comum (Link Direto)
   if (item.title) {
     return (
       <SidebarGroup className="p-0">
         <SidebarMenu>
           <SidebarMenuItem>
-            {/* Trocado 'render' por 'asChild' com o Link encapsulando o conteúdo */}
             <SidebarMenuButton
               id={`nav-main-button-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
               tooltip={item.title}
               isActive={isParentActive}
-              onClick={() => {
-                setActiveParent(item.title!);
-                setActiveChild(null);
-              }}
               className={cn(
                 "rounded-md text-sm font-medium px-3 py-2 h-9 transition-colors cursor-pointer",
                 isParentActive ? "bg-primary! text-primary-foreground!" : "",
@@ -169,62 +149,11 @@ function NavMainItem({
   return null;
 }
 
-function NavMainSubItem({
-  item,
-  activeParent,
-  setActiveParent,
-  activeChild,
-  setActiveChild,
-  parentTitle,
-}: {
-  item: NavItem;
-  activeParent: string | null;
-  activeChild: string | null;
-  setActiveParent: (val: string) => void;
-  setActiveChild: (val: string | null) => void;
-  parentTitle?: string;
-}) {
-  const hasChildren = !!item.children?.length;
-  const [isOpen, setIsOpen] = React.useState(false);
-
-  if (hasChildren && item.title) {
-    return (
-      <SidebarMenuSubItem>
-        <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-          <CollapsibleTrigger asChild>
-            <SidebarMenuSubButton
-              id={`nav-sub-trigger-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
-              className="rounded-md text-sm font-medium px-3 py-2 h-9 w-full"
-            >
-              {item.icon && <item.icon />}
-              <span>{item.title}</span>
-              <ChevronRight
-                className={cn(
-                  "ml-auto transition-transform duration-200",
-                  isOpen && "rotate-90",
-                )}
-              />
-            </SidebarMenuSubButton>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <SidebarMenuSub className="me-0 pe-0">
-              {item.children!.map((child, index) => (
-                <NavMainSubItem
-                  key={child.title || index}
-                  item={child}
-                  activeParent={activeParent}
-                  setActiveParent={setActiveParent}
-                  activeChild={activeChild}
-                  setActiveChild={setActiveChild}
-                  parentTitle={parentTitle}
-                />
-              ))}
-            </SidebarMenuSub>
-          </CollapsibleContent>
-        </Collapsible>
-      </SidebarMenuSubItem>
-    );
-  }
+function NavMainSubItem({ item }: { item: NavItem }) {
+  const pathname = usePathname(); // 3. Captura a URL atual para os sub-itens
+  const isCurrentActive =
+    pathname === item.href ||
+    (item.href !== "/" && pathname.startsWith(`${item.href}/`));
 
   if (item.title) {
     return (
@@ -233,13 +162,9 @@ function NavMainSubItem({
           id={`nav-sub-button-${item.title.toLowerCase().replace(/\s+/g, "-")}`}
           className={cn(
             "w-full rounded-md transition-colors",
-            activeChild === item.title ? "bg-muted! text-foreground!" : "",
+            isCurrentActive ? "bg-muted! text-foreground! font-semibold" : "",
           )}
-          isActive={activeChild === item.title}
-          onClick={() => {
-            setActiveParent(parentTitle || "");
-            setActiveChild(item.title!);
-          }}
+          isActive={isCurrentActive}
           asChild
         >
           <Link href={item.href ?? "/"}>
