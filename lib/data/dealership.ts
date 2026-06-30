@@ -6,6 +6,7 @@ import {
   createDealershipSchema,
   updateDealershipSchema,
 } from "@/lib/validations/dealership";
+import { ConflictError, ForbiddenError, NotFoundError } from "@/lib/api-error";
 import { getCurrentSession } from "./auth";
 
 function generateSlug(name: string): string {
@@ -26,7 +27,7 @@ export async function createDealership(rawInput: unknown) {
     where: { cnpj: input.cnpj },
     select: { id: true },
   });
-  if (existing) throw new Error("CNPJ já cadastrado");
+  if (existing) throw new ConflictError("CNPJ já cadastrado");
 
   const slug = generateSlug(input.name);
 
@@ -47,6 +48,11 @@ export async function createDealership(rawInput: unknown) {
       website: input.website || null,
       description: input.description || null,
     },
+  });
+
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: { onboardingCompleted: true },
   });
 
   await auth.api.setActiveOrganization({
@@ -74,8 +80,8 @@ export async function getDealership(slug: string) {
     },
   });
 
-  if (!org) throw new Error("Dealership not found");
-  if (org.members.length === 0) throw new Error("Forbidden");
+  if (!org) throw new NotFoundError("Concessionária não encontrada");
+  if (org.members.length === 0) throw new ForbiddenError();
 
   return {
     id: org.id,
@@ -102,7 +108,7 @@ export async function updateDealership(slug: string, rawInput: unknown) {
       role: { in: ["owner", "admin"] },
     },
   });
-  if (!member) throw new Error("Forbidden: only admin or owner can update");
+  if (!member) throw new ForbiddenError("Apenas administradores podem editar a concessionária");
 
   const org = await prisma.organization.update({
     where: { slug },
@@ -135,7 +141,7 @@ export async function deleteDealership(slug: string) {
       role: "owner",
     },
   });
-  if (!member) throw new Error("Forbidden: only owner can delete");
+  if (!member) throw new ForbiddenError("Apenas o proprietário pode excluir a concessionária");
 
   await auth.api.deleteOrganization({
     body: { organizationId: member.organizationId },

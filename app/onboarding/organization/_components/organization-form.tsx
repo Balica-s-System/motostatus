@@ -20,7 +20,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { CancelCreationDialog } from "./cancel-creation-dialog";
 
 const formSchema = z.object({
   name: z.string().min(3, {
@@ -93,6 +92,16 @@ export function OrganizationForm() {
         }),
       });
 
+      if (res.status === 401) {
+        router.push("/session-expired");
+        return;
+      }
+
+      if (res.status === 403) {
+        router.push("/forbidden");
+        return;
+      }
+
       if (!res.ok) {
         const err = await res.json();
         const message =
@@ -113,76 +122,95 @@ export function OrganizationForm() {
   }
 
   return (
-    <>
-      <div className="w-full max-w-2xl">
-        <Form {...form}>
-          <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-            <div>
-              <h3 className="text-lg font-medium">Perfil da Organização</h3>
-              <p className="text-sm text-muted-foreground">
-                Configure os dados gerais da concessionária.
-              </p>
-            </div>
+    <div className="w-full max-w-2xl">
+      <Form {...form}>
+        <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+          <div>
+            <h3 className="text-lg font-medium">Perfil da Organização</h3>
+            <p className="text-sm text-muted-foreground">
+              Configure os dados gerais da concessionária.
+            </p>
+          </div>
 
-            <FormField
-              control={form.control}
-              name="logo"
-              render={({ field: { value, onChange, ...fieldProps } }) => (
-                <FormItem className="flex flex-col items-start gap-4 space-y-0 border-b pb-6">
-                  <FormLabel>Logotipo da Empresa</FormLabel>
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-lg border border-dashed border-muted-foreground/30 bg-muted/40 overflow-hidden">
-                      {logoPreview ? (
-                        <Image
-                          width="100"
-                          height="100"
-                          src={logoPreview}
-                          alt="Preview da Logo"
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <Building2 className="h-8 w-8 text-muted-foreground/60" />
-                      )}
-                    </div>
-                    <FormControl>
-                      <div className="relative">
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          id="logo-upload"
-                          onChange={(e) => handleLogoChange(e, onChange)}
-                          {...fieldProps}
-                        />
-                        <label
-                          htmlFor="logo-upload"
-                          className="flex items-center gap-2 px-4 py-2 border rounded-md text-sm font-medium cursor-pointer bg-background hover:bg-accent transition-colors"
-                        >
-                          <Upload className="h-4 w-4" />
-                          Selecionar Imagem
-                        </label>
-                      </div>
-                    </FormControl>
+          <FormField
+            control={form.control}
+            name="logo"
+            render={({ field: { value, onChange, ...fieldProps } }) => (
+              <FormItem className="flex flex-col items-start gap-4 space-y-0 border-b pb-6">
+                <FormLabel>Logotipo da Empresa</FormLabel>
+                <div className="flex items-center gap-4">
+                  <div className="flex h-20 w-20 items-center justify-center rounded-lg border border-dashed border-muted-foreground/30 bg-muted/40 overflow-hidden">
+                    {logoPreview ? (
+                      <Image
+                        width="100"
+                        height="100"
+                        src={logoPreview}
+                        alt="Preview da Logo"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <Building2 className="h-8 w-8 text-muted-foreground/60" />
+                    )}
                   </div>
-                  <FormDescription>
-                    Formatos suportados: PNG ou JPG. Máximo de 2MB.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        id="logo-upload"
+                        onChange={(e) => handleLogoChange(e, onChange)}
+                        {...fieldProps}
+                      />
+                      <label
+                        htmlFor="logo-upload"
+                        className="flex items-center gap-2 px-4 py-2 border rounded-md text-sm font-medium cursor-pointer bg-background hover:bg-accent transition-colors"
+                      >
+                        <Upload className="h-4 w-4" />
+                        Selecionar Imagem
+                      </label>
+                    </div>
+                  </FormControl>
+                </div>
+                <FormDescription>
+                  Formatos suportados: PNG ou JPG. Máximo de 2MB.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nome da Empresa</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    className="bg-background"
+                    placeholder="Ex: Moto Status"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* CNPJ */}
             <FormField
               control={form.control}
-              name="name"
+              name="cnpj"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome da Empresa</FormLabel>
+                  <FormLabel>CNPJ</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       className="bg-background"
-                      placeholder="Ex: Moto Status"
+                      placeholder="00.000.000/0001-00"
                     />
                   </FormControl>
                   <FormMessage />
@@ -190,109 +218,76 @@ export function OrganizationForm() {
               )}
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* CNPJ */}
-              <FormField
-                control={form.control}
-                name="cnpj"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>CNPJ</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        className="bg-background"
-                        placeholder="00.000.000/0001-00"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Telefone */}
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Telefone / WhatsApp</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        className="bg-background"
-                        placeholder="(88) 99999-9999"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Website Link (Opcional) */}
+            {/* Telefone */}
             <FormField
               control={form.control}
-              name="website"
+              name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Website (Opcional)</FormLabel>
+                  <FormLabel>Telefone / WhatsApp</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       className="bg-background"
-                      type="url"
-                      placeholder="https://suaempresa.com.br"
+                      placeholder="(88) 99999-9999"
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+          </div>
 
-            {/* Descrição */}
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descrição</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      rows={4}
-                      className="resize-none bg-background"
-                      placeholder="Conte um pouco sobre os serviços ou a história da sua empresa..."
-                    />
-                  </FormControl>
-                  <FormDescription className="text-right">
-                    {descriptionValue?.length || 0}/300 caracteres
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          {/* Website Link (Opcional) */}
+          <FormField
+            control={form.control}
+            name="website"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Website (Opcional)</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    className="bg-background"
+                    type="url"
+                    placeholder="https://suaempresa.com.br"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <div className="flex gap-2 pt-2">
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Criando..." : "Salvar Alterações"}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setCancelDialogOpen(true)}
-              >
-                Cancelar
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </div>
+          {/* Descrição */}
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Descrição</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    rows={4}
+                    className="resize-none bg-background"
+                    placeholder="Conte um pouco sobre os serviços ou a história da sua empresa..."
+                  />
+                </FormControl>
+                <FormDescription className="text-right">
+                  {descriptionValue?.length || 0}/300 caracteres
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-      <CancelCreationDialog
-        open={cancelDialogOpen}
-        onOpenChange={setCancelDialogOpen}
-      />
-    </>
+          <div className="flex pt-2">
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Criando..." : "Salvar Alterações"}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 }

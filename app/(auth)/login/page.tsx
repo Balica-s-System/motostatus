@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
+import { GoogleOneTap } from "@/components/auth/google-one-tap";
 import { LoginForm } from "./_components/login-form";
 
 export const metadata = {
@@ -14,6 +15,9 @@ export default async function Page() {
   });
 
   if (session) {
+    if (!session.user.onboardingCompleted) {
+      return redirect("/onboarding");
+    }
     return redirect("/admin");
   }
 
@@ -21,6 +25,7 @@ export default async function Page() {
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background p-6 md:p-10">
       <div className="w-full max-w-sm">
         <LoginForm />
+        <GoogleOneTap />
       </div>
     </div>
   );
