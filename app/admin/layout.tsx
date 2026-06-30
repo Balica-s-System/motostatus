@@ -16,13 +16,18 @@ export default async function AdminLayout({
     const cookieStore = await cookies();
     const cookieHeader = cookieStore.toString();
 
-    const response = await fetch("http://localhost:3000/api/user", {
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL
+      ? process.env.NEXT_PUBLIC_APP_URL
+      : process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "http://localhost:3000";
+
+    const response = await fetch(`${baseUrl}/api/user`, {
       headers: {
         Cookie: cookieHeader,
       },
       cache: "no-store",
     });
-
     if (response.ok) {
       user = await response.json();
     }
