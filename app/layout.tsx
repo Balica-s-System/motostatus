@@ -3,6 +3,7 @@ import { Roboto, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import { ThemeProvider } from "@/components/theming/theme-provider";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const robotoSans = Roboto({
   weight: ["300", "400", "500", "700"],
@@ -39,7 +40,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <TooltipProvider>{children}</TooltipProvider>
           <ToastContainer />
         </ThemeProvider>
       </body>
