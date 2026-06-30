@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
+import { ThemeProvider } from "@/components/theming/theme-provider";
 
 const robotoSans = Roboto({
   weight: ["300", "400", "500", "700"],
@@ -29,11 +30,18 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${robotoSans.variable} ${robotoMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        {children}
-
-        <ToastContainer />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <ToastContainer />
+        </ThemeProvider>
       </body>
     </html>
   );
