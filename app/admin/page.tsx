@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/data/auth";
 import { listUserDealerships } from "@/lib/data/dealership";
+import { InviteDialog } from "./_components/invite-dialog";
 
 export default async function AdminPage() {
   const user = await getCurrentUser();
@@ -29,14 +30,26 @@ export default async function AdminPage() {
       ) : (
         <div className="mt-8 w-full max-w-md space-y-4">
           {orgs.map((org) => (
-            <div key={org.id} className="rounded-lg border p-4">
-              <h2 className="text-lg font-semibold">{org.name}</h2>
-              <p className="text-sm text-muted-foreground">
-                {org.cnpj} — {org.phone}
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Seu papel: {org.role}
-              </p>
+            <div
+              key={org.id}
+              className="rounded-lg border p-4 flex items-center justify-between"
+            >
+              <div>
+                <h2 className="text-lg font-semibold">{org.name}</h2>
+                <p className="text-sm text-muted-foreground">
+                  {org.cnpj} — {org.phone}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Seu papel: {org.role}
+                </p>
+              </div>
+
+              {(org.role === "owner" || org.role === "admin") && (
+                <InviteDialog
+                  organizationSlug={org.slug}
+                  organizationName={org.name}
+                />
+              )}
             </div>
           ))}
         </div>

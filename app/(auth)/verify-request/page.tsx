@@ -33,6 +33,7 @@ function VerifyRequest() {
   const [emailPending, setEmailTransition] = useTransition();
   const params = useSearchParams();
   const email = params.get("email") as string;
+  const callbackURL = params.get("callbackURL") || "/";
   const isOtpCompleted = otp.length === 6;
 
   function verifyOtp() {
@@ -43,7 +44,7 @@ function VerifyRequest() {
         fetchOptions: {
           onSuccess: () => {
             notify.success("E-mail verificado com sucesso");
-            router.push("/");
+            router.push(callbackURL);
           },
           onError: () => {
             notify.error("Erro ao verificar o e-mail ou código");

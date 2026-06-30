@@ -31,6 +31,7 @@ model User {
   onboardingCompleted Boolean?     @default(false)
   members             Member[]
   invitations         Invitation[]
+  shareableInvites    ShareableInvite[]
 
   @@unique([email])
   @@map("user")
@@ -102,7 +103,8 @@ model Organization {
   description String?
 
   members     Member[]
-  invitations Invitation[]
+  invitations      Invitation[]
+  shareableInvites ShareableInvite[]
 
   @@unique([slug])
   @@unique([cnpj])
@@ -138,4 +140,21 @@ model Invitation {
   @@index([organizationId])
   @@index([email])
   @@map("invitation")
+}
+
+model ShareableInvite {
+  id             String       @id @default(cuid())
+  token          String       @unique
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdById    String
+  createdBy      User         @relation(fields: [createdById], references: [id])
+  role           String       @default("member")
+  expiresAt      DateTime
+  revokedAt      DateTime?
+  createdAt      DateTime     @default(now())
+
+  @@index([token])
+  @@index([organizationId])
+  @@map("shareable_invite")
 }

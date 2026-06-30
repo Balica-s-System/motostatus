@@ -10,9 +10,8 @@ interface Invitation {
   id: string;
   email: string;
   role: string;
-  organization: {
-    name: string;
-  };
+  organizationId: string;
+  organizationName: string;
 }
 
 export function MemberForm() {
@@ -52,7 +51,7 @@ router.push("/session-expired");
       });
 
       if (res.status === 401) {
-        router.push("/unauthorized");
+        router.push("/session-expired");
         return;
       }
 
@@ -95,7 +94,7 @@ router.push("/session-expired");
               className="flex items-center justify-between rounded-lg border p-4"
             >
               <div>
-                <p className="font-medium">{invite.organization.name}</p>
+                <p className="font-medium">{invite.organizationName}</p>
                 <p className="text-sm text-muted-foreground">
                   Papel: {invite.role}
                 </p>
