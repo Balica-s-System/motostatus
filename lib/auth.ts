@@ -20,7 +20,7 @@ export const auth = betterAuth({
     emailOTP({
       async sendVerificationOTP({ email, otp }) {
         await resend.emails.send({
-          from: "Moto Status <onboarding@resend.dev>",
+          from: "Moto Status <noreply@send.motostatus.com.br>",
           to: [email],
           subject: "Moto Status - Seu código de verificação",
           react: createElement(OtpEmail, { otp }),

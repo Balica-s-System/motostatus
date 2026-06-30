@@ -1,15 +1,11 @@
 import "server-only";
 import { headers } from "next/headers";
+import { ForbiddenError, NotFoundError } from "@/lib/api-error";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import {
-  NotFoundError,
-  ForbiddenError,
-  UnauthorizedError,
-} from "@/lib/api-error";
 import { getCurrentSession, requireAuth } from "./auth";
 
-const INVITE_EXPIRES_IN_SEC = 600; // 10 minutes
+const INVITE_EXPIRES_IN_SEC = 600;
 
 export async function createShareableInvite(organizationSlug: string) {
   const session = await getCurrentSession();
