@@ -26,12 +26,16 @@ export default async function Page() {
   });
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-7rem)] w-full">
-      <Card className="w-full max-w-2xl">
-        <CardHeader>
-          <CardTitle>Configurações Gerais</CardTitle>
+    // min-h mudou para a altura exata restante, e tiramos o item-center para não achatar o card no meio
+    <div className="flex flex-col h-[calc(100vh-5.5rem)] w-full">
+      <Card className="w-full h-full flex flex-col rounded-xl border">
+        <CardHeader className="border-b px-6 py-4">
+          <CardTitle className="text-xl font-bold">
+            Configurações Gerais
+          </CardTitle>
         </CardHeader>
-        <CardContent>
+        {/* Adicionado flex-1 para o conteúdo do formulário preencher a altura interna do card */}
+        <CardContent className="flex-1 p-6 overflow-y-auto">
           <ProfileForm
             initialData={{
               name: user?.name ?? "",

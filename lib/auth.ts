@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { emailOTP, organization } from "better-auth/plugins";
+import { emailOTP, organization, twoFactor } from "better-auth/plugins";
 import { createElement } from "react";
 import InvitationEmail from "@/mails/templates/invitation-email";
 import OtpEmail from "@/mails/templates/otp-email";
@@ -44,6 +44,9 @@ export const auth = betterAuth({
           }),
         });
       },
+    }),
+    twoFactor({
+      issuer: "Moto Status",
     }),
   ],
   user: {

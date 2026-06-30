@@ -28,10 +28,14 @@ model User {
   banExpires DateTime?
   accounts   Account[]
 
-  onboardingCompleted Boolean?     @default(false)
-  members             Member[]
-  invitations         Invitation[]
-  shareableInvites    ShareableInvite[]
+  onboardingCompleted  Boolean?              @default(false)
+  members              Member[]
+  invitations          Invitation[]
+  shareableInvites     ShareableInvite[]
+  notificationSettings NotificationSettings?
+
+  twoFactorEnabled Boolean?    @default(false)
+  twofactors       TwoFactor[]
 
   @@unique([email])
   @@map("user")
@@ -90,19 +94,19 @@ model Verification {
 }
 
 model Organization {
-  id          String       @id
-  name        String
-  slug        String
-  logo        String?
-  createdAt   DateTime
-  metadata    String?
+  id        String   @id
+  name      String
+  slug      String
+  logo      String?
+  createdAt DateTime
+  metadata  String?
 
   cnpj        String?
   phone       String?
   website     String?
   description String?
 
-  members     Member[]
+  members          Member[]
   invitations      Invitation[]
   shareableInvites ShareableInvite[]
 
@@ -157,4 +161,38 @@ model ShareableInvite {
   @@index([token])
   @@index([organizationId])
   @@map("shareable_invite")
+}
+
+model NotificationSettings {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  emailEnabled    Boolean @default(true)
+  whatsappEnabled Boolean @default(false)
+  inAppEnabled    Boolean @default(true)
+
+  securityAlerts      Boolean @default(true)
+  organizationInvites Boolean @default(true)
+  marketingUpdates    Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("notification_settings")
+}
+
+model TwoFactor {
+  id                      String    @id
+  secret                  String
+  backupCodes             String
+  userId                  String
+  user                    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verified                Boolean?  @default(true)
+  failedVerificationCount Int?      @default(0)
+  lockedUntil             DateTime?
+
+  @@index([secret])
+  @@index([userId])
+  @@map("twoFactor")
 }
