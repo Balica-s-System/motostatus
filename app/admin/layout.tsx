@@ -28,6 +28,7 @@ export default async function AdminLayout({
       },
       cache: "no-store",
     });
+
     if (response.ok) {
       user = await response.json();
     }
