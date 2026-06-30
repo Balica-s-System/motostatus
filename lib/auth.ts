@@ -2,8 +2,8 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { emailOTP, organization } from "better-auth/plugins";
 import { createElement } from "react";
-import OtpEmail from "@/mails/templates/otp-email";
 import InvitationEmail from "@/mails/templates/invitation-email";
+import OtpEmail from "@/mails/templates/otp-email";
 import { prisma } from "./prisma";
 import { resend } from "./resend";
 
