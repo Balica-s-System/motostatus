@@ -1,0 +1,78 @@
+"use client";
+
+import { Bell, Lock, LogOut, Settings2 } from "lucide-react";
+import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useSignOut } from "@/hooks/user-signout";
+
+interface IAppProps {
+  name: string;
+  email: string;
+  image: string;
+}
+
+const UserDropdown = ({ email, name, image }: IAppProps) => {
+  const handleSignOut = useSignOut();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button className="relative h-10 w-10 rounded-full" variant="ghost">
+          <Avatar>
+            <AvatarImage alt="Profile Image" src={image} />
+            <AvatarFallback>{name[0].toUpperCase()}</AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="min-w-48">
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="font-medium text-sm leading-none">{name}</p>
+            <p className="text-muted-foreground text-xs leading-none">
+              {email}
+            </p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href="/admin/user-settings/general">
+            <Settings2 />
+            Geral
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href="/admin/user-settings/notifications">
+            <Bell />
+            Notificações
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href="/admin/user-settings/security">
+            <Lock />
+            Segurança
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          variant="destructive"
+          onClick={handleSignOut}
+          className="cursor-pointer"
+        >
+          <LogOut />
+          Log out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
+export default UserDropdown;

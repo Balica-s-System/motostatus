@@ -1,20 +1,36 @@
-import { LogOut } from "lucide-react";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/admin/sidebar/app-sidebar";
+import UserDropdown from "@/components/admin/user-dropdown";
 import { ModeToggle } from "@/components/theming/ModeToggle";
-import { Button } from "@/components/ui/button";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { useSignOut } from "@/hooks/user-signout";
-import { getCurrentUser } from "@/lib/data/auth";
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getCurrentUser();
+  let user = null;
 
-  if (!user) {
+  try {
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.toString();
+
+    const response = await fetch("http://localhost:3000/api/user", {
+      headers: {
+        Cookie: cookieHeader,
+      },
+      cache: "no-store",
+    });
+
+    if (response.ok) {
+      user = await response.json();
+    }
+  } catch (error) {
+    console.error("Erro ao carregar dados do usuário na API:", error);
+  }
+
+  if (!user || user.error) {
     redirect("/login");
   }
 
@@ -25,15 +41,13 @@ export default async function AdminLayout({
         <header className="sticky top-0 z-50 flex h-14 justify-between items-center border-b px-4">
           <SidebarTrigger className="cursor-pointer" />
 
-          <div className="flex gap-x-4">
+          <div className="flex items-center gap-x-4">
             <ModeToggle />
-            <Button
-              variant="destructive"
-              className="cursor-pointer group flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <LogOut className="size-4 group-hover:-translate-x-0.5 transition-transform" />
-              Sair
-            </Button>
+            <UserDropdown
+              email={user.email}
+              name={user.name ?? "Usuário"}
+              image={user.image ?? undefined}
+            />
           </div>
         </header>
         <main className="flex-1 p-4">{children}</main>
