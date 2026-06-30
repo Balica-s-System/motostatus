@@ -20,7 +20,7 @@ export default async function AdminLayout({
       ? process.env.NEXT_PUBLIC_APP_URL
       : process.env.VERCEL_URL
         ? `https://${process.env.VERCEL_URL}`
-        : "http://localhost:3000";
+        : "http://127.0.0.1:3000";
 
     const response = await fetch(`${baseUrl}/api/user`, {
       headers: {
