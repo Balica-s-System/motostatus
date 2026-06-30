@@ -42,11 +42,11 @@ function VerifyRequest() {
         otp: otp,
         fetchOptions: {
           onSuccess: () => {
-            notify.success("Email verified");
+            notify.success("E-mail verificado com sucesso");
             router.push("/");
           },
           onError: () => {
-            notify.error("Error verifying Email/OTP");
+            notify.error("Erro ao verificar o e-mail ou código");
           },
         },
       });
@@ -54,15 +54,16 @@ function VerifyRequest() {
   }
 
   return (
-    <div className="flex flex-col h-screen items-center justify-center">
-      <Card className="min-w-1/4 mx-auto">
+    <div className="flex h-screen flex-col items-center justify-center">
+      <Card className="mx-auto min-w-1/4">
         <CardHeader className="text-center">
-          <CardTitle className="text-xl">Please check your email</CardTitle>
+          <CardTitle className="text-xl">Verifique seu e-mail</CardTitle>
           <CardDescription>
-            We have sent a verification email code to your email address. Please
-            open the email and paste the code below.
+            Enviamos um código de verificação para o seu endereço de e-mail.
+            Abra a mensagem recebida e informe o código abaixo.
           </CardDescription>
         </CardHeader>
+
         <CardContent className="space-y-6">
           <div className="flex flex-col items-center space-y-2">
             <InputOTP
@@ -80,8 +81,9 @@ function VerifyRequest() {
                 <InputOTPSlot index={5} />
               </InputOTPGroup>
             </InputOTP>
+
             <p className="text-sm text-muted-foreground">
-              Enter the 6-digit code sent to your email
+              Digite o código de 6 dígitos enviado para o seu e-mail
             </p>
           </div>
 
@@ -93,10 +95,10 @@ function VerifyRequest() {
             {emailPending ? (
               <>
                 <Loader className="size-4 animate-spin" />
-                <span>Loading...</span>
+                <span>Verificando...</span>
               </>
             ) : (
-              "Verify Account"
+              "Verificar conta"
             )}
           </Button>
         </CardContent>
