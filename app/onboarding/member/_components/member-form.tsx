@@ -23,8 +23,8 @@ interface ApiResponse {
 
 export function MemberForm() {
   const [invitations, setInvitations] = useState<Invitation[]>([]);
-  const [hasName, setHasName] = useState(true); // Default true para evitar flash visual
-  const [userName, setUserName] = useState(""); // Novo estado para capturar o nome se faltar
+  const [hasName, setHasName] = useState(true);
+  const [userName, setUserName] = useState("");
   const [invitationId, setInvitationId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -65,7 +65,7 @@ export function MemberForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           invitationId: id,
-          name: !hasName ? userName.trim() : undefined, // Envia o nome apenas se ele não tiver
+          name: !hasName ? userName.trim() : undefined,
         }),
       });
 
@@ -103,7 +103,6 @@ export function MemberForm() {
         </p>
       </div>
 
-      {/* Se o usuário não tiver nome salvo, renderiza este bloco obrigatório no topo */}
       {!isLoading && !hasName && (
         <div className="space-y-2 rounded-lg border border-amber-500/30 bg-amber-500/5 p-4 animate-in fade-in-50 duration-200">
           <Label
