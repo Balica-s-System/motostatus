@@ -30,7 +30,7 @@ export const auth = betterAuth({
       },
     }),
     organization({
-      sendInvitationEmail: async (data) => {
+      async sendInvitationEmail(data) {
         const acceptLink = `${process.env.BETTER_AUTH_URL}/onboarding/member`;
         await resend.emails.send({
           from: "Moto Status <noreply@send.motostatus.com.br>",
