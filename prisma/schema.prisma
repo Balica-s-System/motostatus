@@ -95,10 +95,17 @@ model Organization {
   logo        String?
   createdAt   DateTime
   metadata    String?
+
+  cnpj        String?
+  phone       String?
+  website     String?
+  description String?
+
   members     Member[]
   invitations Invitation[]
 
   @@unique([slug])
+  @@unique([cnpj])
   @@map("organization")
 }
 
