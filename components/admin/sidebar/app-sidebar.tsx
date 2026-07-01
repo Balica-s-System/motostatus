@@ -29,26 +29,26 @@ export const navData: NavItem[] = [
   { title: "CRM Dashboard", icon: ClipboardList, href: "/crm" },
 
   { label: "Páginas", isSection: true },
-  { title: "BDC", icon: ClipboardList, href: "/admin/bdc" },
-  { title: "Logística", icon: BoxIcon, href: "/admin/logistics" },
+  { title: "BDC", icon: ClipboardList, href: "/dashboard/bdc" },
+  { title: "Logística", icon: BoxIcon, href: "/dashboard/logistics" },
   { title: "Página Pública", icon: ArrowBigUpDashIcon, href: "/publica" },
 
   { label: "Configurações", isSection: true },
   {
     title: "Perfil",
     icon: User2Icon,
-    href: "/admin/settings/profile",
+    href: "/dashboard/settings/profile",
   },
-  { title: "Time", icon: Users2Icon, href: "/admin/settings/time" },
+  { title: "Time", icon: Users2Icon, href: "/dashboard/settings/time" },
 
   { label: "Configurações de Usuário", isSection: true },
-  { title: "Geral", icon: Settings2, href: "/admin/user-settings/general" },
+  { title: "Geral", icon: Settings2, href: "/dashboard/user-settings/general" },
   {
     title: "Notificações",
     icon: Bell,
-    href: "/admin/user-settings/notifications",
+    href: "/dashboard/user-settings/notifications",
   },
-  { title: "Segurança", icon: Lock, href: "/admin/user-settings/security" },
+  { title: "Segurança", icon: Lock, href: "/dashboard/user-settings/security" },
 ];
 
 export function AppSidebar() {

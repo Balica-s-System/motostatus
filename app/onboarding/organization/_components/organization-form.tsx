@@ -6,7 +6,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { notify } from "@/lib/toast-service";
 
 const formSchema = z.object({
   name: z.string().min(3, {
@@ -108,14 +108,14 @@ export function OrganizationForm() {
           typeof err.error === "string"
             ? err.error
             : "Erro ao criar concessionária";
-        toast.error(message);
+        notify.error(message);
         return;
       }
 
-      toast.success("Concessionária criada com sucesso!");
-      router.push("/admin");
+      notify.success("Concessionária criada com sucesso!");
+      router.push("/dashboard");
     } catch {
-      toast.error("Erro de conexão");
+      notify.error("Erro de conexão");
     } finally {
       setIsSubmitting(false);
     }

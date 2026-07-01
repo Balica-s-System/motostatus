@@ -1,6 +1,16 @@
-import { handleApiError } from "@/lib/api-error";
+import { z } from "zod";
+import { apiError, handleApiError } from "@/lib/api-error";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+
+const notificationSettingsSchema = z.object({
+  emailEnabled: z.boolean(),
+  whatsappEnabled: z.boolean(),
+  inAppEnabled: z.boolean(),
+  securityAlerts: z.boolean(),
+  organizationInvites: z.boolean(),
+  marketingUpdates: z.boolean(),
+});
 
 export async function PATCH(request: Request) {
   try {
@@ -9,36 +19,23 @@ export async function PATCH(request: Request) {
     });
 
     if (!session || !session.user) {
-      return Response.json({ error: "Não autorizado" }, { status: 401 });
+      return apiError("Não autorizado", "UNAUTHORIZED");
     }
 
     const body = await request.json();
+    const input = notificationSettingsSchema.parse(body);
 
     await prisma.notificationSettings.upsert({
-      where: {
-        userId: session.user.id,
-      },
-      update: {
-        emailEnabled: body.emailEnabled,
-        whatsappEnabled: body.whatsappEnabled,
-        inAppEnabled: body.inAppEnabled,
-        securityAlerts: body.securityAlerts,
-        organizationInvites: body.organizationInvites,
-        marketingUpdates: body.marketingUpdates,
-      },
-      create: {
-        userId: session.user.id,
-        emailEnabled: body.emailEnabled,
-        whatsappEnabled: body.whatsappEnabled,
-        inAppEnabled: body.inAppEnabled,
-        securityAlerts: body.securityAlerts,
-        organizationInvites: body.organizationInvites,
-        marketingUpdates: body.marketingUpdates,
-      },
+      where: { userId: session.user.id },
+      update: input,
+      create: { userId: session.user.id, ...input },
     });
 
     return Response.json({ success: true });
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return apiError("Dados inválidos", "BAD_REQUEST", error.issues);
+    }
     return handleApiError(error);
   }
 }

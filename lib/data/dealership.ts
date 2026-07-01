@@ -1,12 +1,12 @@
 import "server-only";
 import { headers } from "next/headers";
+import { ConflictError, ForbiddenError, NotFoundError } from "@/lib/api-error";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
   createDealershipSchema,
   updateDealershipSchema,
 } from "@/lib/validations/dealership";
-import { ConflictError, ForbiddenError, NotFoundError } from "@/lib/api-error";
 import { getCurrentSession } from "./auth";
 
 function generateSlug(name: string): string {
@@ -108,7 +108,10 @@ export async function updateDealership(slug: string, rawInput: unknown) {
       role: { in: ["owner", "admin"] },
     },
   });
-  if (!member) throw new ForbiddenError("Apenas administradores podem editar a concessionária");
+  if (!member)
+    throw new ForbiddenError(
+      "Apenas administradores podem editar a concessionária",
+    );
 
   const org = await prisma.organization.update({
     where: { slug },
@@ -141,7 +144,10 @@ export async function deleteDealership(slug: string) {
       role: "owner",
     },
   });
-  if (!member) throw new ForbiddenError("Apenas o proprietário pode excluir a concessionária");
+  if (!member)
+    throw new ForbiddenError(
+      "Apenas o proprietário pode excluir a concessionária",
+    );
 
   await auth.api.deleteOrganization({
     body: { organizationId: member.organizationId },

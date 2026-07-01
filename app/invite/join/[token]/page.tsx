@@ -1,26 +1,31 @@
 import { LogIn, UserCheck } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { cache } from "react";
 import { ErrorPage } from "@/components/general/error-page";
 import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/data/auth";
+import { prisma } from "@/lib/prisma";
+import { cn } from "@/lib/utils";
 import { AcceptButton } from "./accept-button";
 
 interface Props {
   params: Promise<{ token: string }>;
 }
 
-export async function generateMetadata({
-  params,
-}: Props): Promise<Metadata> {
-  const { token } = await params;
-  const invite = await prisma.shareableInvite.findUnique({
+const getInvite = cache(async (token: string) => {
+  return prisma.shareableInvite.findUnique({
     where: { token },
-    include: { organization: { select: { name: true } } },
+    include: {
+      organization: { select: { name: true, slug: true } },
+      createdBy: { select: { name: true } },
+    },
   });
+});
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { token } = await params;
+  const invite = await getInvite(token);
 
   if (!invite || invite.revokedAt || invite.expiresAt < new Date()) {
     return {
@@ -39,13 +44,7 @@ export async function generateMetadata({
 export default async function InviteJoinPage({ params }: Props) {
   const { token } = await params;
 
-  const invite = await prisma.shareableInvite.findUnique({
-    where: { token },
-    include: {
-      organization: { select: { name: true, slug: true } },
-      createdBy: { select: { name: true } },
-    },
-  });
+  const invite = await getInvite(token);
 
   if (!invite) {
     return (
@@ -101,7 +100,7 @@ export default async function InviteJoinPage({ params }: Props) {
           message={`Você já faz parte da equipe ${invite.organization.name}.`}
           primaryAction={{
             label: "Ir para o Painel",
-            href: "/admin",
+            href: "/dashboard",
             icon: UserCheck,
           }}
         />
@@ -125,9 +124,7 @@ export default async function InviteJoinPage({ params }: Props) {
         </h1>
 
         <p className="text-muted-foreground text-lg mb-2 leading-relaxed">
-          <strong className="text-foreground">
-            {invite.createdBy.name}
-          </strong>{" "}
+          <strong className="text-foreground">{invite.createdBy.name}</strong>{" "}
           convidou você para fazer parte da equipe da{" "}
           <strong className="text-foreground">
             {invite.organization.name}
@@ -136,7 +133,10 @@ export default async function InviteJoinPage({ params }: Props) {
         </p>
 
         <p className="text-muted-foreground/60 text-sm mb-8">
-          Este link expira em {expiresInMinutes < 1 ? "menos de 1 minuto" : `até ${expiresInMinutes} minutos`}
+          Este link expira em{" "}
+          {expiresInMinutes < 1
+            ? "menos de 1 minuto"
+            : `até ${expiresInMinutes} minutos`}
           .
         </p>
 

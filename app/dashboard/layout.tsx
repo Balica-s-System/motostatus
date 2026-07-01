@@ -1,42 +1,18 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/admin/sidebar/app-sidebar";
 import UserDropdown from "@/components/admin/user-dropdown";
 import { ModeToggle } from "@/components/theming/ModeToggle";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { getCurrentUser } from "@/lib/data/auth";
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  let user = null;
+  const user = await getCurrentUser();
 
-  try {
-    const cookieStore = await cookies();
-    const cookieHeader = cookieStore.toString();
-
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL
-      ? process.env.NEXT_PUBLIC_APP_URL
-      : process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "http://127.0.0.1:3000";
-
-    const response = await fetch(`${baseUrl}/api/user`, {
-      headers: {
-        Cookie: cookieHeader,
-      },
-      cache: "no-store",
-    });
-
-    if (response.ok) {
-      user = await response.json();
-    }
-  } catch (error) {
-    console.error("Erro ao carregar dados do usuário na API:", error);
-  }
-
-  if (!user || user.error) {
+  if (!user) {
     redirect("/login");
   }
 

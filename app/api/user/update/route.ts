@@ -1,6 +1,16 @@
 import type { NextRequest } from "next/server";
+import { z } from "zod";
+import { apiError, handleApiError } from "@/lib/api-error";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+
+const updateSchema = z.object({
+  name: z
+    .string()
+    .min(2, "O nome deve ter pelo menos 2 caracteres")
+    .transform((v) => v.trim()),
+  image: z.string().optional(),
+});
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -9,32 +19,25 @@ export async function PATCH(request: NextRequest) {
     });
 
     if (!session || !session.user) {
-      return Response.json({ error: "Não autorizado" }, { status: 401 });
+      return apiError("Não autorizado", "UNAUTHORIZED");
     }
 
     const body = await request.json();
-    const { name, image } = body;
-
-    if (!name || name.trim().length < 2) {
-      return Response.json({ error: "Nome inválido" }, { status: 400 });
-    }
+    const input = updateSchema.parse(body);
 
     const updatedUser = await prisma.user.update({
-      where: {
-        id: session.user.id,
-      },
+      where: { id: session.user.id },
       data: {
-        name: name.trim(),
-        image: image && image.trim() !== "" ? image.trim() : null,
+        name: input.name,
+        image: input.image?.trim() || null,
       },
     });
 
     return Response.json(updatedUser);
   } catch (error) {
-    console.error("Erro ao atualizar informações no banco:", error);
-    return Response.json(
-      { error: "Erro interno do servidor" },
-      { status: 500 },
-    );
+    if (error instanceof z.ZodError) {
+      return apiError("Dados inválidos", "BAD_REQUEST", error.issues);
+    }
+    return handleApiError(error);
   }
 }

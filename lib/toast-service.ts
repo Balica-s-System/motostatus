@@ -1,41 +1,34 @@
-import { type ToastOptions, toast } from "react-toastify";
+import { toast } from "sonner";
 
-const defaultOptions: ToastOptions = {
-  position: "top-right",
-  autoClose: 3000,
-  hideProgressBar: false,
-  closeOnClick: true,
-  pauseOnHover: true,
-  draggable: true,
-  progress: undefined,
-  theme: "colored",
-};
+const defaultDuration = 3000;
 
 export const notify = {
-  success: (message: string, options?: ToastOptions) => {
-    toast.success(message, { ...defaultOptions, ...options });
+  success: (message: string, duration?: number) => {
+    toast.success(message, { duration: duration ?? defaultDuration });
   },
 
-  error: (message: string, options?: ToastOptions) => {
-    toast.error(message, { ...defaultOptions, ...options });
+  error: (message: string, duration?: number) => {
+    toast.error(message, { duration: duration ?? defaultDuration });
   },
 
-  info: (message: string, options?: ToastOptions) => {
-    toast.info(message, { ...defaultOptions, ...options });
+  info: (message: string, duration?: number) => {
+    toast.info(message, { duration: duration ?? defaultDuration });
   },
 
-  warn: (message: string, options?: ToastOptions) => {
-    toast.warn(message, { ...defaultOptions, ...options });
+  warn: (message: string, duration?: number) => {
+    toast.warning(message, { duration: duration ?? defaultDuration });
   },
 
   promise: async <T>(
     asyncFn: () => Promise<T>,
     messages: { pending: string; success: string; error: string },
-    options?: ToastOptions,
+    duration?: number,
   ) => {
-    return toast.promise(asyncFn(), messages, {
-      ...defaultOptions,
-      ...options,
+    return toast.promise(asyncFn(), {
+      loading: messages.pending,
+      success: messages.success,
+      error: messages.error,
+      duration: duration ?? defaultDuration,
     });
   },
 };

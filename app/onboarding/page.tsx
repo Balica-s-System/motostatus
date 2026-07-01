@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { getCurrentSession } from "@/lib/data/auth";
 import OnboardingForm from "./_components/onboarding-form";
 
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default async function Page() {
   const session = await getCurrentSession();
   if (session.user.onboardingCompleted) {
-    redirect("/admin");
+    redirect("/dashboard");
   }
 
   return <OnboardingForm />;

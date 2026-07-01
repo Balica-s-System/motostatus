@@ -168,18 +168,6 @@ export function LoginForm({
               {googlePending ? "Conectando..." : "Entrar com Google"}
             </Button>
           </Field>
-
-          <Field>
-            <Button variant="outline" type="button" disabled={isAnyPending}>
-              Entrar com Apple
-            </Button>
-          </Field>
-
-          <Field>
-            <Button variant="outline" type="button" disabled={isAnyPending}>
-              Entrar com GitHub
-            </Button>
-          </Field>
         </FieldGroup>
       </form>
 

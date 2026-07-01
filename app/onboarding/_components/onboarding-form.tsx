@@ -1,7 +1,6 @@
 "use client";
 
 import { ChevronRightIcon, ExternalLinkIcon } from "lucide-react";
-import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Item,
@@ -10,16 +9,6 @@ import {
   ItemDescription,
   ItemTitle,
 } from "@/components/ui/item";
-
-export const metadata: Metadata = {
-  title: "Onboarding | Moto Status",
-  description:
-    "Selecione como deseja começar no Moto Status: criando uma nova organização ou configurando seu perfil de membro.",
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
 
 export default function OnboardingForm() {
   return (

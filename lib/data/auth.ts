@@ -1,8 +1,8 @@
 import "server-only";
-import { cache } from "react";
 import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { cache } from "react";
 import { UnauthorizedError } from "@/lib/api-error";
+import { auth } from "@/lib/auth";
 
 export const getCurrentUser = cache(async () => {
   const session = await auth.api.getSession({

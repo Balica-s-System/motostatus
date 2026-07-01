@@ -17,7 +17,7 @@ import { useSignOut } from "@/hooks/user-signout";
 interface IAppProps {
   name: string;
   email: string;
-  image: string;
+  image?: string;
 }
 
 const UserDropdown = ({ email, name, image }: IAppProps) => {
@@ -44,19 +44,19 @@ const UserDropdown = ({ email, name, image }: IAppProps) => {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild className="cursor-pointer">
-          <Link href="/admin/user-settings/general">
+          <Link href="/dashboard/user-settings/general">
             <Settings2 />
             Geral
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="cursor-pointer">
-          <Link href="/admin/user-settings/notifications">
+          <Link href="/dashboard/user-settings/notifications">
             <Bell />
             Notificações
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="cursor-pointer">
-          <Link href="/admin/user-settings/security">
+          <Link href="/dashboard/user-settings/security">
             <Lock />
             Segurança
           </Link>

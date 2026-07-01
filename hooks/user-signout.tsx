@@ -12,7 +12,7 @@ export function useSignOut() {
       fetchOptions: {
         onSuccess: () => {
           router.push("/login");
-          notify.success("Singed out Successfully");
+          notify.success("Sessão encerrada com sucesso");
         },
         onError: () => {
           notify.error("Failed to sign out");

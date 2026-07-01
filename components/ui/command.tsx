@@ -1,15 +1,17 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Dialog as CommandPrimitive } from "radix-ui"
+import { Dialog as CommandPrimitive } from "radix-ui";
+import type * as React from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
-import { cn } from "@/lib/utils"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-
-function Command({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+function Command({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="command"
@@ -19,7 +21,7 @@ function Command({
       )}
       {...props}
     />
-  )
+  );
 }
 
 function CommandDialog({
@@ -27,7 +29,9 @@ function CommandDialog({
   open,
   onOpenChange,
   ...props
-}: React.ComponentProps<typeof Dialog> & { commandProps?: React.ComponentProps<typeof Command> }) {
+}: React.ComponentProps<typeof Dialog> & {
+  commandProps?: React.ComponentProps<typeof Command>;
+}) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange} {...props}>
       <DialogContent className="overflow-hidden p-0 shadow-lg sm:max-w-lg">
@@ -40,13 +44,10 @@ function CommandDialog({
         </Command>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
 
-function CommandInput({
-  className,
-  ...props
-}: React.ComponentProps<"input">) {
+function CommandInput({ className, ...props }: React.ComponentProps<"input">) {
   return (
     <div
       data-slot="command-input-wrapper"
@@ -62,36 +63,30 @@ function CommandInput({
         {...props}
       />
     </div>
-  )
+  );
 }
 
-function CommandList({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+function CommandList({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="command-list"
+      className={cn("max-h-64 overflow-y-auto overflow-x-hidden", className)}
+      {...props}
+    />
+  );
+}
+
+function CommandEmpty({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="command-empty"
       className={cn(
-        "max-h-64 overflow-y-auto overflow-x-hidden",
+        "py-6 text-center text-sm text-muted-foreground",
         className,
       )}
       {...props}
     />
-  )
-}
-
-function CommandEmpty({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="command-empty"
-      className={cn("py-6 text-center text-sm text-muted-foreground", className)}
-      {...props}
-    />
-  )
+  );
 }
 
 function CommandGroup({
@@ -114,7 +109,7 @@ function CommandGroup({
       )}
       {props.children}
     </div>
-  )
+  );
 }
 
 function CommandItem({
@@ -130,7 +125,7 @@ function CommandItem({
       )}
       {...props}
     />
-  )
+  );
 }
 
 function CommandShortcut({
@@ -146,7 +141,7 @@ function CommandShortcut({
       )}
       {...props}
     />
-  )
+  );
 }
 
 function CommandSeparator({
@@ -159,7 +154,7 @@ function CommandSeparator({
       className={cn("-mx-1 h-px bg-border", className)}
       {...props}
     />
-  )
+  );
 }
 
 export {
@@ -172,4 +167,4 @@ export {
   CommandList,
   CommandSeparator,
   CommandShortcut,
-}
+};

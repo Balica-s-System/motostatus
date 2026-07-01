@@ -42,7 +42,7 @@ export function AcceptButton({ token }: AcceptButtonProps) {
         notify.success("Convite aceito com sucesso!");
       }
 
-      router.push("/admin");
+      router.push("/dashboard");
     } catch {
       notify.error("Erro de conexão");
     } finally {

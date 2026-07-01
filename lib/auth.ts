@@ -1,6 +1,6 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { emailOTP, organization, twoFactor } from "better-auth/plugins";
+import { emailOTP, oneTap, organization, twoFactor } from "better-auth/plugins";
 import { createElement } from "react";
 import InvitationEmail from "@/mails/templates/invitation-email";
 import OtpEmail from "@/mails/templates/otp-email";
@@ -19,6 +19,7 @@ export const auth = betterAuth({
     },
   },
   plugins: [
+    oneTap(),
     emailOTP({
       async sendVerificationOTP({ email, otp }) {
         await resend.emails.send({
@@ -47,6 +48,7 @@ export const auth = betterAuth({
     }),
     twoFactor({
       issuer: "Moto Status",
+      allowPasswordless: true,
     }),
   ],
   user: {

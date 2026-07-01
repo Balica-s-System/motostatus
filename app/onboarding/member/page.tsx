@@ -5,7 +5,7 @@ import { MemberForm } from "./_components/member-form";
 export default async function Page() {
   const session = await getCurrentSession();
   if (session.user.onboardingCompleted) {
-    redirect("/admin");
+    redirect("/dashboard");
   }
 
   return (

@@ -104,9 +104,7 @@ export default function InvitationEmail({
             >
               <strong style={{ color: "#111827" }}>{inviterName}</strong>{" "}
               convidou você para fazer parte da equipe da{" "}
-              <strong style={{ color: "#111827" }}>
-                {organizationName}
-              </strong>{" "}
+              <strong style={{ color: "#111827" }}>{organizationName}</strong>{" "}
               como <strong style={{ color: "#f97316" }}>{role}</strong>.
             </Text>
 

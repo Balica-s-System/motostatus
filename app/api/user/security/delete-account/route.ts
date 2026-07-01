@@ -12,11 +12,12 @@ export async function DELETE(request: Request) {
       return Response.json({ error: "Não autorizado" }, { status: 401 });
     }
 
-    await prisma.user.delete({
-      where: {
-        id: session.user.id,
-      },
-    });
+    const userId = session.user.id;
+
+    await prisma.$transaction([
+      prisma.shareableInvite.deleteMany({ where: { createdById: userId } }),
+      prisma.user.delete({ where: { id: userId } }),
+    ]);
 
     return Response.json({ success: true });
   } catch (error) {
