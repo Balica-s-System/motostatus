@@ -2,7 +2,7 @@
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation"; // 1. Importa o hook de rotas do Next.js
+import { usePathname } from "next/navigation";
 import * as React from "react";
 import {
   Collapsible,
@@ -31,7 +31,6 @@ export type NavItem = {
 };
 
 export function NavMain({ items }: { items: NavItem[] }) {
-  // Limpeza dos estados manuais redundantes
   return (
     <>
       {items.map((item, index) => (
@@ -42,7 +41,7 @@ export function NavMain({ items }: { items: NavItem[] }) {
 }
 
 function NavMainItem({ item }: { item: NavItem }) {
-  const pathname = usePathname(); // 2. Captura a URL atual na barra de endereço
+  const pathname = usePathname();
   const hasChildren = !!item.children?.length;
 
   const isUrlActive = (href?: string) => {
@@ -52,14 +51,12 @@ function NavMainItem({ item }: { item: NavItem }) {
     return false;
   };
 
-  // Se o item tem filhos, ele fica ativo se algum dos sub-itens estiver ativo
   const isParentActive = hasChildren
     ? item.children?.some((child) => isUrlActive(child.href))
     : isUrlActive(item.href);
 
   const [isOpen, setIsOpen] = React.useState(isParentActive);
 
-  // Garante que o menu retrátil permaneça aberto se a rota ativa pertencer a um de seus filhos
   React.useEffect(() => {
     if (isParentActive) {
       setIsOpen(true);
@@ -76,7 +73,6 @@ function NavMainItem({ item }: { item: NavItem }) {
     );
   }
 
-  // Item com filhos colapsáveis
   if (hasChildren && item.title) {
     return (
       <SidebarGroup className="p-0">
@@ -119,7 +115,6 @@ function NavMainItem({ item }: { item: NavItem }) {
     );
   }
 
-  // Item terminal comum (Link Direto)
   if (item.title) {
     return (
       <SidebarGroup className="p-0">

@@ -52,7 +52,7 @@ function buildNavData(slug: string | null): NavItem[] {
         icon: BoxIcon,
         href: `/admin/${slug}/logistics`,
       },
-      { title: "Página Pública", icon: ArrowBigUpDashIcon, href: "/publica" },
+      { title: "Página Pública", icon: ArrowBigUpDashIcon, href: "#" },
       { label: "Configurações", isSection: true },
       {
         title: "Perfil",
