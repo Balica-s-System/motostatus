@@ -6,13 +6,12 @@ import {
   type User,
   UserCog,
 } from "lucide-react";
-import { redirect } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getCurrentSession } from "@/lib/data/auth";
+import { getCurrentUser } from "@/lib/data/auth";
+import { getDealership } from "@/lib/data/dealership";
 import { listOrganizationMembers } from "@/lib/data/member";
-import { prisma } from "@/lib/prisma";
-import { InviteDialog } from "../../_components/invite-dialog";
+import { InviteDialog } from "../../../_components/invite-dialog";
 
 const roleConfig: Record<
   string,
@@ -49,24 +48,18 @@ function RoleBadge({ role }: { role: string }) {
   );
 }
 
-export default async function TeamPage() {
-  const session = await getCurrentSession();
-  const activeOrgId = session.session.activeOrganizationId;
+export default async function TeamPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
 
-  if (!activeOrgId) {
-    redirect("/dashboard");
-  }
+  const user = await getCurrentUser();
+  const dealership = await getDealership(slug);
+  const members = await listOrganizationMembers(slug);
 
-  const org = await prisma.organization.findUnique({
-    where: { id: activeOrgId },
-    select: { slug: true, name: true },
-  });
-
-  if (!org) redirect("/dashboard");
-
-  const members = await listOrganizationMembers(org.slug);
-
-  const currentMember = members.find((m) => m.userId === session.user.id);
+  const currentMember = members.find((m) => m.userId === user?.id);
   const isAdmin =
     currentMember?.role === "owner" || currentMember?.role === "admin";
 
@@ -76,13 +69,13 @@ export default async function TeamPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Time</h1>
           <p className="text-muted-foreground text-sm">
-            Gerencie os membros da {org.name}
+            Gerencie os membros da {dealership.name}
           </p>
         </div>
         {isAdmin && (
           <InviteDialog
-            organizationSlug={org.slug}
-            organizationName={org.name}
+            organizationSlug={slug}
+            organizationName={dealership.name}
           />
         )}
       </div>

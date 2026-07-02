@@ -1,12 +1,9 @@
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/admin/sidebar/app-sidebar";
 import UserDropdown from "@/components/admin/user-dropdown";
 import { ModeToggle } from "@/components/theming/ModeToggle";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { auth } from "@/lib/auth";
-import { getCurrentSession, getCurrentUser } from "@/lib/data/auth";
-import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/data/auth";
 
 export default async function AdminLayout({
   children,
@@ -21,25 +18,6 @@ export default async function AdminLayout({
 
   if (!user.onboardingCompleted) {
     redirect("/onboarding");
-  }
-
-  const { session } = await getCurrentSession();
-
-  if (!session.activeOrganizationId) {
-    const member = await prisma.member.findFirst({
-      where: { userId: user.id },
-      orderBy: { createdAt: "asc" },
-      select: { organizationId: true },
-    });
-
-    if (member) {
-      await auth.api.setActiveOrganization({
-        body: { organizationId: member.organizationId },
-        headers: await headers(),
-      });
-    }
-
-    redirect("/dashboard");
   }
 
   return (

@@ -1,27 +1,16 @@
-import { Building2, ShieldCheck, ShieldHalf } from "lucide-react";
-import { redirect } from "next/navigation";
-import { getCurrentSession } from "@/lib/data/auth";
-import { getDealership } from "@/lib/data/dealership";
-import { prisma } from "@/lib/prisma";
+import { Building2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getDealership } from "@/lib/data/dealership";
 import { ProfileForm } from "./_components/profile-form";
 
-export default async function ProfilePage() {
-  const session = await getCurrentSession();
-  const activeOrgId = session.session.activeOrganizationId;
+export default async function ProfilePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
 
-  if (!activeOrgId) {
-    redirect("/dashboard");
-  }
-
-  const org = await prisma.organization.findUnique({
-    where: { id: activeOrgId },
-    select: { slug: true },
-  });
-
-  if (!org) redirect("/dashboard");
-
-  const dealership = await getDealership(org.slug);
+  const dealership = await getDealership(slug);
 
   const isAdmin = dealership.role === "owner" || dealership.role === "admin";
 
@@ -85,7 +74,7 @@ export default async function ProfilePage() {
       <Card>
         <CardContent className="pt-6">
           <ProfileForm
-            slug={org.slug}
+            slug={slug}
             defaultValues={{
               name: dealership.name,
               cnpj: dealership.cnpj ?? "",

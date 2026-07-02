@@ -30,9 +30,10 @@ export default async function AdminPage() {
       ) : (
         <div className="mt-8 w-full max-w-md space-y-4">
           {orgs.map((org) => (
-            <div
+            <Link
               key={org.id}
-              className="rounded-lg border p-4 flex items-center justify-between"
+              href={`/dashboard/${org.slug}`}
+              className="rounded-lg border p-4 flex items-center justify-between hover:bg-accent transition-colors"
             >
               <div>
                 <h2 className="text-lg font-semibold">{org.name}</h2>
@@ -50,7 +51,7 @@ export default async function AdminPage() {
                   organizationName={org.name}
                 />
               )}
-            </div>
+            </Link>
           ))}
         </div>
       )}
