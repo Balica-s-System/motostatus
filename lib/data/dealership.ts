@@ -1,4 +1,5 @@
 import "server-only";
+import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 import { ConflictError, ForbiddenError, NotFoundError } from "@/lib/api-error";
 import { auth } from "@/lib/auth";
@@ -67,33 +68,43 @@ export async function createDealership(rawInput: unknown) {
   };
 }
 
+const getOrganizationBySlug = unstable_cache(
+  async (slug: string) =>
+    prisma.organization.findUnique({
+      where: { slug },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        logo: true,
+        cnpj: true,
+        phone: true,
+        website: true,
+        description: true,
+        createdAt: true,
+      },
+    }),
+  ["organization-by-slug"],
+  { revalidate: 60, tags: ["organization"] },
+);
+
 export async function getDealership(slug: string) {
   const session = await getCurrentSession();
 
-  const org = await prisma.organization.findUnique({
-    where: { slug },
-    include: {
-      members: {
-        where: { userId: session.user.id },
-        select: { id: true, role: true },
-      },
-    },
-  });
+  const org = await getOrganizationBySlug(slug);
 
   if (!org) throw new NotFoundError("Concessionária não encontrada");
-  if (org.members.length === 0) throw new ForbiddenError();
+
+  const member = await prisma.member.findFirst({
+    where: { organizationId: org.id, userId: session.user.id },
+    select: { role: true },
+  });
+
+  if (!member) throw new ForbiddenError();
 
   return {
-    id: org.id,
-    name: org.name,
-    slug: org.slug,
-    logo: org.logo,
-    cnpj: org.cnpj,
-    phone: org.phone,
-    website: org.website,
-    description: org.description,
-    createdAt: org.createdAt,
-    role: org.members[0].role,
+    ...org,
+    role: member.role,
   };
 }
 

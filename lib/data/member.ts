@@ -65,8 +65,12 @@ export async function listOrganizationMembers(slug: string) {
 
   if (!currentMember) throw new ForbiddenError();
 
+  return listOrganizationMembersById(org.id);
+}
+
+export async function listOrganizationMembersById(organizationId: string) {
   const members = await prisma.member.findMany({
-    where: { organizationId: org.id },
+    where: { organizationId },
     include: {
       user: {
         select: { id: true, name: true, email: true, image: true },

@@ -3,20 +3,16 @@ import { AppSidebar } from "@/components/admin/sidebar/app-sidebar";
 import UserDropdown from "@/components/admin/user-dropdown";
 import { ModeToggle } from "@/components/theming/ModeToggle";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { getCurrentUser } from "@/lib/data/auth";
+import { getCurrentSession } from "@/lib/data/auth";
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getCurrentUser();
+  const session = await getCurrentSession();
 
-  if (!user) {
-    redirect("/login");
-  }
-
-  if (!user.onboardingCompleted) {
+  if (!session.user.onboardingCompleted) {
     redirect("/onboarding");
   }
 
@@ -30,9 +26,9 @@ export default async function AdminLayout({
           <div className="flex items-center gap-x-4">
             <ModeToggle />
             <UserDropdown
-              email={user.email}
-              name={user.name ?? "Usuário"}
-              image={user.image ?? undefined}
+              email={session.user.email}
+              name={session.user.name ?? "Usuário"}
+              image={session.user.image ?? undefined}
             />
           </div>
         </header>

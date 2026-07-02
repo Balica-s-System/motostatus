@@ -126,6 +126,7 @@ model Member {
 
   @@index([organizationId])
   @@index([userId])
+  @@index([organizationId, userId])
   @@map("member")
 }
 

@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCurrentUser } from "@/lib/data/auth";
 import { getDealership } from "@/lib/data/dealership";
-import { listOrganizationMembers } from "@/lib/data/member";
+import { listOrganizationMembersById } from "@/lib/data/member";
 import { InviteDialog } from "../../../_components/invite-dialog";
 
 const roleConfig: Record<
@@ -95,9 +95,12 @@ function TeamSkeleton() {
 async function TeamContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  const user = await getCurrentUser();
-  const dealership = await getDealership(slug);
-  const members = await listOrganizationMembers(slug);
+  const [user, dealership] = await Promise.all([
+    getCurrentUser(),
+    getDealership(slug),
+  ]);
+
+  const members = await listOrganizationMembersById(dealership.id);
 
   const currentMember = members.find((m) => m.userId === user?.id);
   const isAdmin =

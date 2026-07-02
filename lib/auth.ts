@@ -12,6 +12,12 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
   baseURL: process.env.BETTER_AUTH_URL as string,
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60,
+    },
+  },
   socialProviders: {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID as string,
