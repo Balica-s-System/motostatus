@@ -45,7 +45,11 @@ interface ProfileFormProps {
   logoUrl: string | null;
 }
 
-export function ProfileForm({ slug, defaultValues, logoUrl }: ProfileFormProps) {
+export function ProfileForm({
+  slug,
+  defaultValues,
+  logoUrl,
+}: ProfileFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [logoPreview, setLogoPreview] = useState<string | null>(logoUrl);
   const router = useRouter();
@@ -96,7 +100,9 @@ export function ProfileForm({ slug, defaultValues, logoUrl }: ProfileFormProps) 
 
       if (!res.ok) {
         const err = await res.json();
-        notify.error(typeof err.error === "string" ? err.error : "Erro ao salvar");
+        notify.error(
+          typeof err.error === "string" ? err.error : "Erro ao salvar",
+        );
         return;
       }
 
@@ -174,7 +180,11 @@ export function ProfileForm({ slug, defaultValues, logoUrl }: ProfileFormProps) 
             <FormItem>
               <FormLabel>Nome da Empresa</FormLabel>
               <FormControl>
-                <Input {...field} className="bg-background" placeholder="Ex: Moto Status" />
+                <Input
+                  {...field}
+                  className="bg-background"
+                  placeholder="Ex: Moto Status"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -189,7 +199,11 @@ export function ProfileForm({ slug, defaultValues, logoUrl }: ProfileFormProps) 
               <FormItem>
                 <FormLabel>CNPJ</FormLabel>
                 <FormControl>
-                  <Input {...field} className="bg-background" placeholder="00.000.000/0001-00" />
+                  <Input
+                    {...field}
+                    className="bg-background"
+                    placeholder="00.000.000/0001-00"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -203,7 +217,11 @@ export function ProfileForm({ slug, defaultValues, logoUrl }: ProfileFormProps) 
               <FormItem>
                 <FormLabel>Telefone / WhatsApp</FormLabel>
                 <FormControl>
-                  <Input {...field} className="bg-background" placeholder="(88) 99999-9999" />
+                  <Input
+                    {...field}
+                    className="bg-background"
+                    placeholder="(88) 99999-9999"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -218,7 +236,12 @@ export function ProfileForm({ slug, defaultValues, logoUrl }: ProfileFormProps) 
             <FormItem>
               <FormLabel>Website (Opcional)</FormLabel>
               <FormControl>
-                <Input {...field} className="bg-background" type="url" placeholder="https://suaempresa.com.br" />
+                <Input
+                  {...field}
+                  className="bg-background"
+                  type="url"
+                  placeholder="https://suaempresa.com.br"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -247,7 +270,7 @@ export function ProfileForm({ slug, defaultValues, logoUrl }: ProfileFormProps) 
           )}
         />
 
-        <div className="flex pt-2">
+        <div className="flex pt-2 items-center justify-end">
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Salvando..." : "Salvar Alterações"}
           </Button>
