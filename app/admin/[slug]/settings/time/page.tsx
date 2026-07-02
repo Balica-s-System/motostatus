@@ -6,8 +6,11 @@ import {
   type User,
   UserCog,
 } from "lucide-react";
+import Image from "next/image";
+import { Suspense } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getCurrentUser } from "@/lib/data/auth";
 import { getDealership } from "@/lib/data/dealership";
 import { listOrganizationMembers } from "@/lib/data/member";
@@ -48,11 +51,48 @@ function RoleBadge({ role }: { role: string }) {
   );
 }
 
-export default async function TeamPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+function TeamSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-32" />
+          <Skeleton className="h-4 w-56" />
+        </div>
+        <Skeleton className="h-9 w-32" />
+      </div>
+      <Card>
+        <CardHeader className="pb-3">
+          <Skeleton className="h-5 w-32" />
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="divide-y">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between px-6 py-4"
+              >
+                <div className="flex items-center gap-3">
+                  <Skeleton className="size-10 rounded-full" />
+                  <div className="space-y-1">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-48" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-5 w-20 rounded-full" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+async function TeamContent({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
   const user = await getCurrentUser();
@@ -105,13 +145,16 @@ export default async function TeamPage({
                   <div className="flex items-center gap-3">
                     <Avatar className="size-10">
                       {member.image ? (
-                        <img
+                        <Image
+                          width={40}
+                          height={40}
                           src={member.image}
                           alt={member.name ?? ""}
                           className="size-full object-cover rounded-full"
                         />
-                      ) : null}
-                      <AvatarFallback>{initials}</AvatarFallback>
+                      ) : (
+                        <AvatarFallback>{initials}</AvatarFallback>
+                      )}
                     </Avatar>
                     <div>
                       <p className="text-sm font-medium leading-tight">
@@ -138,5 +181,17 @@ export default async function TeamPage({
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function TeamPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  return (
+    <Suspense fallback={<TeamSkeleton />}>
+      <TeamContent params={params} />
+    </Suspense>
   );
 }

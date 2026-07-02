@@ -3,6 +3,7 @@
 import { Loader } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState, useTransition } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,9 +20,33 @@ import {
 import { authClient } from "@/lib/auth-client";
 import { notify } from "@/lib/toast-service";
 
+function VerifyRequestSkeleton() {
+  return (
+    <div className="flex h-screen flex-col items-center justify-center">
+      <Card className="mx-auto min-w-1/4">
+        <CardHeader className="text-center">
+          <Skeleton className="h-6 w-48 mx-auto" />
+          <Skeleton className="h-4 w-64 mx-auto mt-2" />
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="flex flex-col items-center space-y-2">
+            <div className="flex gap-2">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Skeleton key={i} className="h-10 w-10" />
+              ))}
+            </div>
+            <Skeleton className="h-4 w-56" />
+          </div>
+          <Skeleton className="h-10 w-full" />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default function VerifyRequestRoute() {
   return (
-    <Suspense>
+    <Suspense fallback={<VerifyRequestSkeleton />}>
       <VerifyRequest />
     </Suspense>
   );

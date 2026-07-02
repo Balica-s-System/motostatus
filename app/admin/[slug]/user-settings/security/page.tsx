@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Card,
   CardContent,
@@ -14,7 +16,29 @@ import { DangerZone } from "./_components/danger-zone";
 import { SessionsManager } from "./_components/sessions-manager";
 import { TwoFactorSection } from "./_components/two-factor-section";
 
-export default async function Page() {
+function SecuritySkeleton() {
+  return (
+    <div className="flex flex-col h-[calc(100vh-5.5rem)] w-full">
+      <Card className="w-full h-full flex flex-col rounded-xl border">
+        <CardHeader className="border-b px-6 py-4">
+          <Skeleton className="h-6 w-48" />
+          <Skeleton className="h-4 w-64 mt-1" />
+        </CardHeader>
+        <CardContent className="flex-1 p-6 space-y-8">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="space-y-3">
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-4 w-48" />
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+async function SecurityContent() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -60,5 +84,13 @@ export default async function Page() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<SecuritySkeleton />}>
+      <SecurityContent />
+    </Suspense>
   );
 }

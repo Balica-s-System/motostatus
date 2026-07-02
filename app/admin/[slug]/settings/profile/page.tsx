@@ -1,9 +1,31 @@
+import { Suspense } from "react";
 import { Building2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getDealership } from "@/lib/data/dealership";
 import { ProfileForm } from "./_components/profile-form";
 
-export default async function ProfilePage({
+function ProfileSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-4 w-48" />
+      </div>
+      <Card>
+        <CardContent className="pt-6 space-y-4">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+async function ProfileContent({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -87,5 +109,17 @@ export default async function ProfilePage({
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function ProfilePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  return (
+    <Suspense fallback={<ProfileSkeleton />}>
+      <ProfileContent params={params} />
+    </Suspense>
   );
 }

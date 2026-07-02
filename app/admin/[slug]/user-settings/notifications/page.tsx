@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Card,
   CardContent,
@@ -11,7 +13,31 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NotificationForm } from "./_components/notification-form";
 
-export default async function Page() {
+function NotificationsSkeleton() {
+  return (
+    <div className="flex flex-col h-[calc(100vh-5.5rem)] w-full">
+      <Card className="w-full h-full flex flex-col rounded-xl border">
+        <CardHeader className="border-b px-6 py-4">
+          <Skeleton className="h-6 w-32" />
+          <Skeleton className="h-4 w-64 mt-1" />
+        </CardHeader>
+        <CardContent className="flex-1 p-6 space-y-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="flex items-center justify-between">
+              <div className="space-y-1">
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-3 w-56" />
+              </div>
+              <Skeleton className="h-6 w-11 rounded-full" />
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+async function NotificationsContent() {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -24,7 +50,6 @@ export default async function Page() {
     where: { userId: session.user.id },
   });
 
-  // Monta os valores iniciais seguros se o registro for nulo no banco
   const initialSettings = {
     emailEnabled: settings?.emailEnabled ?? true,
     whatsappEnabled: settings?.whatsappEnabled ?? false,
@@ -45,10 +70,17 @@ export default async function Page() {
         </CardHeader>
 
         <CardContent className="flex-1 p-6 overflow-y-auto">
-          {/* O formulário foi chamado aqui injetando os dados estruturados */}
           <NotificationForm initialData={initialSettings} />
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<NotificationsSkeleton />}>
+      <NotificationsContent />
+    </Suspense>
   );
 }
