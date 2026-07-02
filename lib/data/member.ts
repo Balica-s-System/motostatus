@@ -32,6 +32,9 @@ export async function acceptInvitation(invitationId: string) {
   const member = await prisma.member.findFirst({
     where: { userId: session.user.id },
     orderBy: { createdAt: "desc" },
+    include: {
+      organization: { select: { slug: true } },
+    },
   });
 
   if (member) {
@@ -39,7 +42,10 @@ export async function acceptInvitation(invitationId: string) {
       body: { organizationId: member.organizationId },
       headers: await headers(),
     });
+    return member.organization.slug;
   }
+
+  return null;
 }
 
 export async function listOrganizationMembers(slug: string) {

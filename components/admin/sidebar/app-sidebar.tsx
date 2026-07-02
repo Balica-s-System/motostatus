@@ -26,70 +26,69 @@ import { type NavItem, NavMain } from "./nav-main";
 
 function getSlug(pathname: string): string | null {
   const segments = pathname.split("/").filter(Boolean);
-  if (
-    segments[0] === "dashboard" &&
-    segments[1] &&
-    segments[1] !== "user-settings"
-  ) {
+  if (segments[0] === "admin" && segments[1]) {
     return segments[1];
   }
   return null;
 }
 
 function buildNavData(slug: string | null): NavItem[] {
-  const orgBase = slug ? `/dashboard/${slug}` : "/dashboard";
-
-  return [
+  const items: NavItem[] = [
     { label: "Dashboards", isSection: true },
-    { title: "Visão Geral", icon: PieChart, href: orgBase },
+    {
+      title: "Visão Geral",
+      icon: PieChart,
+      href: slug ? `/admin/${slug}/dashboard` : "/admin",
+    },
     { title: "CRM Dashboard", icon: ClipboardList, href: "/crm" },
-
-    { label: "Páginas", isSection: true },
-    {
-      title: "BDC",
-      icon: ClipboardList,
-      href: slug ? `${orgBase}/bdc` : "/dashboard",
-    },
-    {
-      title: "Logística",
-      icon: BoxIcon,
-      href: slug ? `${orgBase}/logistics` : "/dashboard",
-    },
-    {
-      title: "Página Pública",
-      icon: ArrowBigUpDashIcon,
-      href: "/publica",
-    },
-
-    { label: "Configurações", isSection: true },
-    {
-      title: "Perfil",
-      icon: User2Icon,
-      href: slug ? `${orgBase}/settings/profile` : "/dashboard",
-    },
-    {
-      title: "Time",
-      icon: Users2Icon,
-      href: slug ? `${orgBase}/settings/time` : "/dashboard",
-    },
-
-    { label: "Configurações de Usuário", isSection: true },
-    {
-      title: "Geral",
-      icon: Settings2,
-      href: "/dashboard/user-settings/general",
-    },
-    {
-      title: "Notificações",
-      icon: Bell,
-      href: "/dashboard/user-settings/notifications",
-    },
-    {
-      title: "Segurança",
-      icon: Lock,
-      href: "/dashboard/user-settings/security",
-    },
   ];
+
+  if (slug) {
+    items.push(
+      { label: "Páginas", isSection: true },
+      { title: "BDC", icon: ClipboardList, href: `/admin/${slug}/bdc` },
+      {
+        title: "Logística",
+        icon: BoxIcon,
+        href: `/admin/${slug}/logistics`,
+      },
+      { title: "Página Pública", icon: ArrowBigUpDashIcon, href: "/publica" },
+      { label: "Configurações", isSection: true },
+      {
+        title: "Perfil",
+        icon: User2Icon,
+        href: `/admin/${slug}/settings/profile`,
+      },
+      {
+        title: "Time",
+        icon: Users2Icon,
+        href: `/admin/${slug}/settings/time`,
+      },
+    );
+  }
+
+  if (slug) {
+    items.push(
+      { label: "Configurações de Usuário", isSection: true },
+      {
+        title: "Geral",
+        icon: Settings2,
+        href: `/admin/${slug}/user-settings/general`,
+      },
+      {
+        title: "Notificações",
+        icon: Bell,
+        href: `/admin/${slug}/user-settings/notifications`,
+      },
+      {
+        title: "Segurança",
+        icon: Lock,
+        href: `/admin/${slug}/user-settings/security`,
+      },
+    );
+  }
+
+  return items;
 }
 
 export function AppSidebar() {

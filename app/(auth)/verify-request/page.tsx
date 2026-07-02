@@ -33,7 +33,7 @@ function VerifyRequest() {
   const [emailPending, setEmailTransition] = useTransition();
   const params = useSearchParams();
   const email = params.get("email") as string;
-  const callbackURL = params.get("callbackURL") || "/";
+  const callbackURL = params.get("callbackURL") || "/onboarding";
   const isOtpCompleted = otp.length === 6;
 
   function verifyOtp() {

@@ -32,7 +32,7 @@ export default async function AdminPage() {
           {orgs.map((org) => (
             <Link
               key={org.id}
-              href={`/dashboard/${org.slug}`}
+              href={`/admin/${org.slug}/dashboard`}
               className="rounded-lg border p-4 flex items-center justify-between hover:bg-accent transition-colors"
             >
               <div>

@@ -35,9 +35,9 @@ export async function POST(request: Request) {
       });
     }
 
-    await acceptInvitation(invitationId);
+    const slug = await acceptInvitation(invitationId);
 
-    return Response.json({ success: true });
+    return Response.json({ slug });
   } catch (error) {
     return handleApiError(error);
   }

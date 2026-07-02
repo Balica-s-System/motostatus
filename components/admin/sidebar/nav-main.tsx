@@ -45,11 +45,11 @@ function NavMainItem({ item }: { item: NavItem }) {
   const pathname = usePathname(); // 2. Captura a URL atual na barra de endereço
   const hasChildren = !!item.children?.length;
 
-  // Função para checar se o link exato ou uma sub-rota está ativa
   const isUrlActive = (href?: string) => {
     if (!href) return false;
-    // Retorna verdadeiro se a rota atual for idêntica ou se estender o caminho do link
-    return pathname === href || pathname.startsWith(`${href}/`);
+    if (pathname === href) return true;
+    if (hasChildren && pathname.startsWith(`${href}/`)) return true;
+    return false;
   };
 
   // Se o item tem filhos, ele fica ativo se algum dos sub-itens estiver ativo
@@ -150,10 +150,8 @@ function NavMainItem({ item }: { item: NavItem }) {
 }
 
 function NavMainSubItem({ item }: { item: NavItem }) {
-  const pathname = usePathname(); // 3. Captura a URL atual para os sub-itens
-  const isCurrentActive =
-    pathname === item.href ||
-    (item.href !== "/" && pathname.startsWith(`${item.href}/`));
+  const pathname = usePathname();
+  const isCurrentActive = pathname === item.href;
 
   if (item.title) {
     return (

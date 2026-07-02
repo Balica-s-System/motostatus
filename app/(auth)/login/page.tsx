@@ -2,6 +2,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { GoogleOneTap } from "@/components/auth/google-one-tap";
 import { auth } from "@/lib/auth";
+import { getOrgDashboardUrl } from "@/lib/data/auth";
 import { LoginForm } from "./_components/login-form";
 
 export const metadata = {
@@ -18,7 +19,7 @@ export default async function Page() {
     if (!session.user.onboardingCompleted) {
       return redirect("/onboarding");
     }
-    return redirect("/dashboard");
+    return redirect(await getOrgDashboardUrl());
   }
 
   return (

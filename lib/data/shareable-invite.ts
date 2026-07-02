@@ -88,7 +88,7 @@ export async function acceptShareableInvite(token: string) {
     where: { token },
     include: {
       organization: {
-        select: { id: true, name: true },
+        select: { id: true, name: true, slug: true },
       },
     },
   });
@@ -109,6 +109,7 @@ export async function acceptShareableInvite(token: string) {
     return {
       alreadyMember: true,
       organizationName: invite.organization.name,
+      organizationSlug: invite.organization.slug,
     };
   }
 
@@ -135,5 +136,6 @@ export async function acceptShareableInvite(token: string) {
   return {
     alreadyMember: false,
     organizationName: invite.organization.name,
+    organizationSlug: invite.organization.slug,
   };
 }

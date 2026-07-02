@@ -100,7 +100,7 @@ export default async function InviteJoinPage({ params }: Props) {
           message={`Você já faz parte da equipe ${invite.organization.name}.`}
           primaryAction={{
             label: "Ir para o Painel",
-            href: "/dashboard",
+            href: "/admin",
             icon: UserCheck,
           }}
         />

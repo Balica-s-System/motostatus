@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
-import { getCurrentSession } from "@/lib/data/auth";
+import { getCurrentSession, getOrgDashboardUrl } from "@/lib/data/auth";
 import { MemberForm } from "./_components/member-form";
 
 export default async function Page() {
   const session = await getCurrentSession();
   if (session.user.onboardingCompleted) {
-    redirect("/dashboard");
+    redirect(await getOrgDashboardUrl());
   }
 
   return (

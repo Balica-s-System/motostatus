@@ -112,8 +112,9 @@ export function OrganizationForm() {
         return;
       }
 
+      const data = await res.json();
       notify.success("Concessionária criada com sucesso!");
-      router.push("/dashboard");
+      router.push(`/admin/${data.slug}/dashboard`);
     } catch {
       notify.error("Erro de conexão");
     } finally {
